@@ -1,0 +1,50 @@
+.verify-email {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100vh;
+}
+
+.verify-email__inner {
+    text-align: center;
+    /* 中のテキスト中央寄せ */
+}
+
+.verify-email__message {
+    font-weight: 700;
+    font-size: 24px;
+}
+
+.verify-email__page-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin: 32px auto 0;
+    background-color: #D9D9D9;
+    width: 257px;
+    height: 69px;
+    border: 1px solid #000000;
+    border-radius: 10px;
+}
+
+.verify-email__page-link a {
+    text-decoration: none;
+    color: #000000;
+    font-weight: 700;
+    font-size: 24px;
+}
+
+.resend {
+    margin: 32px auto 0;
+}
+
+.resend__btn {
+    background-color: transparent;
+    color: #0073CC;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0;
+}
