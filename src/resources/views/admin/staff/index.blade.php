@@ -34,14 +34,5 @@
         </tbody>
     </table>
 
-    {{-- ページネーション --}}
-    <div class="pagination">
-        {{ $staffs->links() }}
-    </div>
-
-    {{-- CSV出力ボタン --}}
-    <div class="export-btn">
-        <a href="{{ route('admin.staff.export') }}" class="btn">CSV出力</a>
-    </div>
 </div>
 @endsection

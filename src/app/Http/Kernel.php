@@ -63,6 +63,8 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        // 管理者専用（以下２行追加）
         'is_admin' => \App\Http\Middleware\IsAdmin::class,
+        'guest.admin' => \App\Http\Middleware\RedirectIfAdminAuthenticated::class,
     ];
 }

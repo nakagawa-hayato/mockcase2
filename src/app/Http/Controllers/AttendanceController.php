@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\AttendanceRequest;
 use App\Models\Attendance;
 use App\Models\BreakTime;
 use App\Models\StampCorrectionRequest;
@@ -216,21 +217,12 @@ class AttendanceController extends Controller
     public function edit($id)
     {
         $attendance = Attendance::findOrFail($id);
-        return view('user.attendance.detail', compact('attendance'));
+        return view('user.detail', compact('attendance'));
     }
 
-    public function storeCorrectionRequest(Request $request, $attendanceId)
+    public function storeCorrectionRequest(AttendanceRequest $request, $attendanceId)
     {
         $attendance = Attendance::with('breakTimes')->findOrFail($attendanceId);
-
-        $request->validate([
-            'clock_in_at' => 'nullable|date_format:H:i',
-            'clock_out_at' => 'nullable|date_format:H:i',
-            'breaks' => 'nullable|array',
-            'breaks.*.start_time' => 'nullable|date_format:H:i',
-            'breaks.*.end_time' => 'nullable|date_format:H:i',
-            'reason' => 'nullable|string|max:255',
-        ]);
 
         StampCorrectionRequest::create([
             'user_id' => auth()->id(),

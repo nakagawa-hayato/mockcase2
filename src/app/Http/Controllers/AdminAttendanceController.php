@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\AttendanceRequest;
 use App\Models\Attendance;
 use Carbon\Carbon;
 
@@ -43,33 +44,34 @@ class AdminAttendanceController extends Controller
     /**
      * 勤怠更新処理
      */
-    public function update(Request $request, $id)
+    public function update(AttendanceRequest $request, $id)
     {
         $attendance = Attendance::findOrFail($id);
 
-        // バリデーション
-        $validated = $request->validate([
-            'clock_in'  => ['nullable', 'date_format:H:i'],
-            'clock_out' => ['nullable', 'date_format:H:i', 'after_or_equal:clock_in'],
-            'break_hm'  => ['nullable', 'regex:/^\d{1,2}:\d{2}$/'], // 例: 01:30
-        ]);
+        // validated データを取得
+        $validated = $request->validated();
 
         // 更新処理
-        $attendance->clock_in  = $validated['clock_in'];
-        $attendance->clock_out = $validated['clock_out'];
-        $attendance->break_hm  = $validated['break_hm'];
+        $attendance->clock_in_at  = $validated['clock_in_at'] ?? null;
+        $attendance->clock_out_at = $validated['clock_out_at'] ?? null;
+        $attendance->breaks       = $validated['breaks'] ?? null;
+        $attendance->reason       = $validated['reason'] ?? null;
 
         // 勤務時間再計算（必要なら）
-        if ($attendance->clock_in && $attendance->clock_out) {
-            $in  = Carbon::parse($attendance->clock_in);
-            $out = Carbon::parse($attendance->clock_out);
+        if ($attendance->clock_in_at && $attendance->clock_out_at) {
+            $in  = Carbon::createFromFormat('H:i', $attendance->clock_in_at);
+            $out = Carbon::createFromFormat('H:i', $attendance->clock_out_at);
             $workMinutes = $out->diffInMinutes($in);
 
-            // 休憩を引く
-            if (!empty($attendance->break_hm)) {
-                [$h, $m] = explode(':', $attendance->break_hm);
-                $breakMinutes = $h * 60 + $m;
-                $workMinutes -= $breakMinutes;
+            // 休憩時間を引く
+            if (!empty($attendance->breaks)) {
+                foreach ($attendance->breaks as $break) {
+                    if (!empty($break['start_time']) && !empty($break['end_time'])) {
+                        $bStart = Carbon::createFromFormat('H:i', $break['start_time']);
+                        $bEnd   = Carbon::createFromFormat('H:i', $break['end_time']);
+                        $workMinutes -= $bEnd->diffInMinutes($bStart);
+                    }
+                }
             }
 
             $attendance->work_hm = sprintf('%02d:%02d', intdiv($workMinutes, 60), $workMinutes % 60);

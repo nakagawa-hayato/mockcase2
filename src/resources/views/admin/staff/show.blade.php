@@ -45,7 +45,7 @@
 
     {{-- CSV出力 --}}
     <div class="mt-3">
-        <a href="{{ route('admin.staff.export', $user->id) }}" class="btn btn-success">CSV出力</a>
+        <a href="{{ route('admin.staff.export', ['id' => $user->id]) }}" class="btn btn-success">CSV出力</a>
     </div>
 </div>
 @endsection

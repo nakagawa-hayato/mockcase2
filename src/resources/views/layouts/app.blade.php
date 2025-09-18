@@ -24,6 +24,7 @@
 
             @auth
                 <nav class="header__nav">
+                    @if (!Request::is('login') && !Request::is('admin.login') && !Request::is('register'))
                     <ul class="header__nav-list">
                         @if (auth()->check() && auth()->user()->isAdmin())
                             {{-- 管理者専用メニュー --}}
@@ -44,7 +45,7 @@
                                     <a href="{{ route('attendance.index') }}" class="header__link">今月の出勤一覧</a>
                                 </li>
                                 <li class="header__nav-item">
-                                    <a href="{{ route('attendance.correction.list') }}" class="header__link">申請一覧</a>
+                                    <a href="{{ route('correction_request.list') }}" class="header__link">申請一覧</a>
                                 </li>
                             @elseif (request()->routeIs('attendance.detail') || request()->routeIs('attendance.show'))
                                 @include('partials.nav-detail')
@@ -57,7 +58,7 @@
                                     <a href="{{ route('attendance.index') }}" class="header__link">勤怠一覧</a>
                                 </li>
                                 <li class="header__nav-item">
-                                    <a href="{{ route('attendance.correction.list') }}" class="header__link">申請</a>
+                                    <a href="{{ route('attendance.edit', ['id' => $attendanceId ?? 0]) }}" class="header__link">申請</a>
                                 </li>
                             @endif
                         @endif
@@ -71,6 +72,7 @@
                             </form>
                         </li>
                     </ul>
+                    @endif
                 </nav>
             @endauth
         </header>

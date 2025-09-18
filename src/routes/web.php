@@ -51,8 +51,10 @@ Route::middleware(['auth','verified'])->group(function () {
 // 管理者
 Route::prefix('admin')->group(function () {
     // 認証不要ルート
-    Route::get('/login', [AdminAuthenticatedSessionController::class, 'create'])->name('admin.login');
-    Route::post('/login', [AdminAuthenticatedSessionController::class, 'store']);
+    Route::middleware('guest.admin')->group(function () {
+        Route::get('/login', [AdminAuthenticatedSessionController::class, 'create'])->name('admin.login');
+        Route::post('/login', [AdminAuthenticatedSessionController::class, 'store']);
+    });
 
     // 認証必要ルート
     Route::middleware(['auth', 'verified', 'is_admin'])->group(function () {
@@ -67,7 +69,7 @@ Route::prefix('admin')->group(function () {
         // 特定スタッフの月次勤怠一覧
         Route::get('/attendance/staff/{id}', [AdminStaffController::class, 'show'])->name('admin.staff.attendance.show');
         // CSVエクスポート
-        Route::get('/staff/list/export', [AdminStaffController::class, 'exportCsv'])->name('admin.staff.export');
+        Route::get('/staff/{id}/export', [AdminStaffController::class, 'exportCsv'])->name('admin.staff.export');
         Route::put('/stamp_correction_request/list/{id}', [CorrectionRequestController::class, 'approve'])
             ->name('correction_request.approve');
     });

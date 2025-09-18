@@ -31,7 +31,7 @@
             @foreach ($rows as $row)
                 <tr>
                     {{-- 日付 --}}
-                    <td>{{ $row['attendance']?->date_label ?? $row['carbon']->format('m/d') . '（' . ['日','月','火','水','木','金','土'][$row['carbon']->dayOfWeek] . '）' }}</td>
+                    <td>{{ $row['attendance']?->date_label ?? ($row['carbon']->format('m/d') . '（' . ['日','月','火','水','木','金','土'][$row['carbon']->dayOfWeek] . '）') }}</td>
 
                     {{-- 出勤 --}}
                     <td>{{ $row['attendance']?->clock_in_hm }}</td>
@@ -48,7 +48,7 @@
 
                     {{-- 詳細（常に表示） --}}
                     <td>
-                        <a href="{{ route('attendance.show', ['id' => $attendance?->id ?? 0]) }}" class="btn-small">詳細</a>
+                        <a href="{{ route('attendance.show', ['id' => $row['attendance']?->id ?? 0]) }}" class="btn-small">詳細</a>
                     </td>
                 </tr>
             @endforeach

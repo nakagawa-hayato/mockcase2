@@ -15,7 +15,7 @@ class AdminStaffController extends Controller
     public function index()
     {
         // 一般ユーザーのみを対象にしたい場合は role カラム等で絞る
-        $staffs = User::orderBy('name')->paginate(10); // 1ページ10件ずつ
+        $staffs = User::orderBy('name')->get();
 
         return view('admin.staff.index', compact('staffs'));
     }
@@ -23,9 +23,9 @@ class AdminStaffController extends Controller
     /**
      * 特定スタッフの月次勤怠一覧へリダイレクト
      */
-    public function show(Request $request, $userId)
+    public function show(Request $request, $id)
     {
-        $user = User::findOrFail($userId);
+        $user = User::findOrFail($id);
 
         $ym = $request->query('ym');
         if (!$ym || !preg_match('/^\d{6}$/', $ym)) {
@@ -61,9 +61,9 @@ class AdminStaffController extends Controller
     /**
      * CSV出力
      */
-    public function exportCsv($userId)
+    public function exportCsv($id)
     {
-        $user = User::findOrFail($userId);
+        $user = User::findOrFail($id);
         $attendances = Attendance::where('user_id', $user->id)
             ->with('breakTimes')
             ->orderBy('date')
