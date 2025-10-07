@@ -73,16 +73,27 @@ input::placeholder {
 
 /* コンテンツ */
 .content {
-    display: flex;
-    flex-direction: column;
     flex-grow: 1;
     width: 100%;
+    padding: 55px 0;
+    min-height: calc(100vh - 80px);
+            /* ヘッダー除いた高さ */
+    background-color: #E1E1E1;
+}
+
+.form {
+    width: 60%;
+    height: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
 }
 
 .content__heading {
-    text-align: center;
     font-weight: 700;
-    font-size: 36px;
+    padding-left: 20px;
+    font-size: 30px;
+    border-left: 8px solid #000000;
 }
 
 @media screen and (max-width: 1200px) {
@@ -111,14 +122,20 @@ input::placeholder {
     padding: 12px 0;
     background-color: #000000;
     color: #FFFFFF;
+    text-decoration: none;
     border: none;
-    border-radius: 4px;
+    border-radius: 5px;
     cursor: pointer;
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 700;
     transition: background-color 0.3s;
 }
 
 .btn:hover {
     background-color: #B3A69D;
+}
+
+.form__error {
+    color: #FF333F;
+    margin-top: 8px;
 }

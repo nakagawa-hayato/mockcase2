@@ -17,9 +17,8 @@ class CreateStampCorrectionRequestsTable extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('attendance_id')->constrained()->cascadeOnDelete();
-            $table->time('clock_in_at')->nullable();
-            $table->time('clock_out_at')->nullable();
-            $table->json('breaks')->nullable(); // 複数休憩を配列で保持 [{start_time,end_time}, ...]
+            $table->timestamp('clock_in_at')->nullable();
+            $table->timestamp('clock_out_at')->nullable();
             $table->text('reason')->nullable();
             $table->string('status')->default('pending');
             $table->timestamp('approved_at')->nullable();

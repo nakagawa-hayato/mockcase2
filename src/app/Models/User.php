@@ -54,6 +54,11 @@ class User extends Authenticatable implements MustVerifyEmail // ここを追加
         return $this->hasMany(StampCorrectionRequest::class);
     }
 
+    public function approvedStampCorrectionRequests()
+{
+    return $this->hasMany(StampCorrectionRequest::class, 'approved_by');
+}
+
     public function isAdmin(): bool
     {
         return $this->role === 'admin';

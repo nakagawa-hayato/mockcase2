@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Attendance extends Model
 {
@@ -11,7 +12,11 @@ class Attendance extends Model
 
     protected $fillable = ['user_id', 'date', 'clock_in_at', 'clock_out_at'];
 
-    protected $dates = ['date', 'clock_in_at', 'clock_out_at'];
+    protected $casts = [
+        'date'        => 'date',
+        'clock_in_at' => 'datetime',
+        'clock_out_at'=> 'datetime',
+    ];
 
     // リレーション
     public function user()
@@ -24,6 +29,11 @@ class Attendance extends Model
         return $this->hasMany(BreakTime::class);
     }
 
+    public function stampCorrectionRequests()
+    {
+        return $this->hasMany(StampCorrectionRequest::class);
+    }
+
     // --- 日付系 ---
     public function getWeekdayJpAttribute(): string
     {
@@ -31,9 +41,28 @@ class Attendance extends Model
         return $weekJp[$this->date->dayOfWeek];
     }
 
+    // 年だけ（例: 2025年）
+    public function getDateYearLabelAttribute(): string
+    {
+        return $this->date->format('Y年');
+    }
+
+    // 月日だけ（例: 9月22日）
+    public function getDateMonthDayLabelAttribute(): string
+    {
+        return $this->date->format('n月j日');
+    }
+
+    // 一覧（日付列用: 06/01(金)）
     public function getDateLabelAttribute(): string
     {
         return $this->date->format('m/d') . '（' . $this->weekday_jp . '）';
+    }
+
+    // 詳細（日付表示用: 2023年6月1日）
+    public function getDateFullLabelAttribute(): string
+    {
+        return $this->date->format('Y年n月j日') . '（' . $this->weekday_jp . '）';
     }
 
     // 勤務時間（休憩控除後）

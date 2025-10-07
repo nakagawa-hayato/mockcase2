@@ -7,6 +7,7 @@ use App\Http\Requests\AttendanceRequest;
 use App\Models\Attendance;
 use App\Models\BreakTime;
 use App\Models\StampCorrectionRequest;
+use App\Models\BreakCorrection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -196,13 +197,13 @@ class AttendanceController extends Controller
             $attendance = $attendances->get($key);
 
             $rows[] = [
-                'carbon'     => $day,
+                'carbon'     => $day->copy(),
                 'attendance' => $attendance,
             ];
         }
 
-        // 表示ラベル（例: 2025年9月）
-        $displayLabel = $start->format('Y年n月');
+        // 表示ラベル（例: 2025/09）
+        $displayLabel = $start->format('Y/m');
 
         // ビューへ渡す
         return view('user.index', compact(
@@ -216,44 +217,64 @@ class AttendanceController extends Controller
     // 勤怠詳細
     public function edit($id)
     {
-        $attendance = Attendance::findOrFail($id);
-        return view('user.detail', compact('attendance'));
-    }
+        $attendance = Attendance::with('user')->findOrFail($id);
 
-    public function storeCorrectionRequest(AttendanceRequest $request, $attendanceId)
+        // === 承認待ちの修正申請があるかチェック ===
+        $pendingRequest = $attendance->stampCorrectionRequests()
+            ->where('status', 'pending')
+            ->first();
+
+        if ($pendingRequest) {
+            // 申請詳細画面にリダイレクト
+            return redirect()->route('correction_request.show', $pendingRequest->id)
+                ->with('notice', 'この日の修正申請は承認待ちです。');
+        }
+            return view('user.detail', compact('attendance'));
+        }
+
+    public function store(AttendanceRequest $request, $attendanceId)
     {
         $attendance = Attendance::with('breakTimes')->findOrFail($attendanceId);
 
-        StampCorrectionRequest::create([
-            'user_id' => auth()->id(),
-            'attendance_id' => $attendance->id,
-            'clock_in_at' => $request->clock_in_at,
-            'clock_out_at' => $request->clock_out_at,
-            'breaks' => $request->breaks,
-            'reason' => $request->reason,
-            'status' => 'pending',
-        ]);
-
-        return redirect()->route('attendance.show',$attendance->id)
-            ->with('status', '修正申請を提出しました（承認待ち）');
-    }
-
-    public function show($id)
-    {
-        $attendance = Attendance::with('breakTimes')->findOrFail($id);
-
-        $pendingRequest = \App\Models\StampCorrectionRequest::where('attendance_id', $attendance->id)
+        // === 既に承認待ちの修正申請が存在するか確認 ===
+        $exists = StampCorrectionRequest::where('attendance_id', $attendance->id)
             ->where('status', 'pending')
-            ->latest()
-            ->first();
+            ->exists();
 
-        if (!$pendingRequest) {
-            // 承認待ちが無ければ通常の編集ページへ
-            return redirect()->route('attendance.edit', $attendance->id);
+        if ($exists) {
+            return redirect()
+                ->route('correction_request.show', 
+                    StampCorrectionRequest::where('attendance_id', $attendance->id)
+                        ->where('status', 'pending')
+                        ->first()
+                )
+                ->with('error', 'この日の申請は承認待ちのため、新しい申請はできません。');
         }
 
-        return view('user.request', compact('attendance', 'pendingRequest'));
-    }
+        // StampCorrectionRequest を作成
+        $stampRequest = StampCorrectionRequest::create([
+            'user_id'       => auth()->id(),
+            'attendance_id' => $attendance->id,
+            'clock_in_at'   => $request->clock_in_at,
+            'clock_out_at'  => $request->clock_out_at,
+            'reason'        => $request->reason,
+            'status'        => 'pending',
+        ]);
 
+        // 休憩修正リクエストも保存
+        if ($request->breaks) {
+            foreach ($request->breaks as $br) {
+                BreakCorrection::create([
+                    'stamp_correction_request_id' => $stampRequest->id,
+                    'start_time' => $br['start_time'],
+                    'end_time'   => $br['end_time'],
+                ]);
+            }
+        }
+
+        // 修正申請詳細画面にリダイレクト
+        return redirect()->route('correction_request.show', $stampRequest)
+            ->with('status', '修正申請を提出しました（承認待ち）');
+    }
 
 }

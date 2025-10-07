@@ -1,0 +1,99 @@
+.detail-form__inner {
+    width: 100%;
+    background-color: #FFFFFF;
+    margin: 32px 0;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 700;
+
+}
+
+.detail-form__group {
+    display: grid;
+    align-items: center;
+    border-bottom: 1px solid #E1E1E1;
+    padding: 24px 0px 24px 48px;
+    letter-spacing: 0.15em;
+
+    grid-template-columns: 1fr 2fr;
+}
+
+.detail-form__group:last-of-type {
+    border: none;
+}
+
+.detail-form__label {
+    color: #737373;
+}
+
+.detail-form__inputs-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.detail-form__name,
+.detail-form__date {
+    display: block;
+    padding: 0 18px;
+}
+
+.detail-form__date,
+.detail-form__inputs {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 50%;
+}
+
+.detail-form__input,
+.detail-form__textarea {
+    border: 1px solid #D9D9D9;
+    border-radius: 4px;
+    letter-spacing: 0.15em;
+}
+
+.detail-form__textarea {
+    width: 50%;
+}
+
+/* 見た目をテキスト風にする（全ブラウザに対する保険） */
+input[type="time"] {
+    -webkit-appearance: textfield;
+    /* Chrome/Safari */
+    -moz-appearance: textfield;
+    /* Firefox */
+    appearance: textfield;
+    padding: 4px 24px;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    text-align: center;
+}
+
+/* WebKit の余計な UI を隠す */
+input[type="time"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-clear-button,
+input[type="time"]::-webkit-inner-spin-button {
+    display: none;
+    -webkit-appearance: none;
+    /* 念のため */
+}
+
+/* Firefox の場合もスピナー系を抑える（冗長だが安全）*/
+input[type="time"]::-moz-focus-inner {
+    border: 0;
+}
+
+.detail-form__textarea {
+    padding: 10px;
+    height: 72px;
+}
+
+.detail-form__btn {
+    width: 130px;
+    margin-left: auto;
+    text-align: center;
+}
+

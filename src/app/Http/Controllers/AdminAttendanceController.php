@@ -48,41 +48,36 @@ class AdminAttendanceController extends Controller
     {
         $attendance = Attendance::findOrFail($id);
 
-        // validated データを取得
         $validated = $request->validated();
 
-        // 更新処理
+        // 出勤・退勤更新
         $attendance->clock_in_at  = $validated['clock_in_at'] ?? null;
         $attendance->clock_out_at = $validated['clock_out_at'] ?? null;
-        $attendance->breaks       = $validated['breaks'] ?? null;
-        $attendance->reason       = $validated['reason'] ?? null;
 
-        // 勤務時間再計算（必要なら）
-        if ($attendance->clock_in_at && $attendance->clock_out_at) {
-            $in  = Carbon::createFromFormat('H:i', $attendance->clock_in_at);
-            $out = Carbon::createFromFormat('H:i', $attendance->clock_out_at);
-            $workMinutes = $out->diffInMinutes($in);
+        // 休憩時間更新
+        if (isset($validated['breaks'])) {
+            // 既存の breakTimes を削除
+            $attendance->breakTimes()->delete();
 
-            // 休憩時間を引く
-            if (!empty($attendance->breaks)) {
-                foreach ($attendance->breaks as $break) {
-                    if (!empty($break['start_time']) && !empty($break['end_time'])) {
-                        $bStart = Carbon::createFromFormat('H:i', $break['start_time']);
-                        $bEnd   = Carbon::createFromFormat('H:i', $break['end_time']);
-                        $workMinutes -= $bEnd->diffInMinutes($bStart);
-                    }
+            // 新しい breakTimes を作成
+            foreach ($validated['breaks'] as $break) {
+                if (!empty($break['start_time']) && !empty($break['end_time'])) {
+                    $attendance->breakTimes()->create([
+                        'start_time' => $break['start_time'],
+                        'end_time'   => $break['end_time'],
+                    ]);
                 }
             }
-
-            $attendance->work_hm = sprintf('%02d:%02d', intdiv($workMinutes, 60), $workMinutes % 60);
         }
 
+        // DB 保存
         $attendance->save();
 
         return redirect()
             ->route('admin.attendance.index', ['date' => $attendance->date->toDateString()])
             ->with('success', '勤怠を更新しました');
     }
+
 }
 
 

@@ -37,7 +37,6 @@ class AdminStaffController extends Controller
 
         $prevYm = $start->copy()->subMonth()->format('Ym');
         $nextYm = $start->copy()->addMonth()->format('Ym');
-        $displayLabel = $start->format('Y年n月');
 
         $attendances = Attendance::where('user_id', $user->id)
             ->whereBetween('date', [$start->toDateString(), $end->toDateString()])
@@ -47,11 +46,17 @@ class AdminStaffController extends Controller
 
         $rows = [];
         for ($day = $start->copy(); $day->lte($end); $day->addDay()) {
+            $key = $day->toDateString();
+            $attendance = $attendances->get($key);
+
             $rows[] = [
-                'date' => $day,
-                'attendance' => $attendances->get($day->toDateString())
+                'carbon'     => $day->copy(),
+                'attendance' => $attendance,
             ];
         }
+
+        // 表示ラベル（例: 2025/09）
+        $displayLabel = $start->format('Y/m');
 
         return view('admin.staff.show', compact(
             'user', 'rows', 'displayLabel', 'prevYm', 'nextYm'
@@ -80,7 +85,7 @@ class AdminStaffController extends Controller
             fputcsv($handle, ['日付','出勤','退勤','休憩','合計','備考']);
             foreach ($attendances as $att) {
                 fputcsv($handle, [
-                    $att->date->format('Y-m-d'),
+                    $att->date_label,
                     $att->clock_in_hm,
                     $att->clock_out_hm,
                     $att->break_hm,

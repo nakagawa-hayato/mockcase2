@@ -15,7 +15,10 @@
     <div class="app">
         <header class="header">
             <div class="header__heading">
-                <a href="/attendance" class="logo">
+                <a href="{{ auth()->check() && auth()->user()->isAdmin()
+                    ? route('admin.attendance.index')
+                    : route('attendance.index') }}"
+                class="logo">
                     <img src="{{ asset('img/logo.svg') }}" alt="タイトル画像" class="img-logo-svg" />
                 </a>
             </div>
@@ -25,53 +28,50 @@
             @auth
                 <nav class="header__nav">
                     @if (!Request::is('login') && !Request::is('admin.login') && !Request::is('register'))
-                    <ul class="header__nav-list">
-                        @if (auth()->check() && auth()->user()->isAdmin())
-                            {{-- 管理者専用メニュー --}}
-                            <li class="header__nav-item">
-                                <a href="{{ route('admin.attendance.index') }}" class="header__link">勤怠一覧</a>
-                            </li>
-                            <li class="header__nav-item">
-                                <a href="{{ route('admin.staff.index') }}" class="header__link">スタッフ一覧</a>
-                            </li>
-                            <li class="header__nav-item">
-                                <a href="{{ route('correction_request.list') }}" class="header__link">申請一覧</a>
-                            </li>
-                        @else
-                            {{-- 一般ユーザー用 --}}
-                            @if (session('afterClockOut'))
-                                {{-- clockOut後のナビ --}}
+                        <ul class="header__nav-list">
+                            @if (auth()->check() && auth()->user()->isAdmin())
+                                {{-- 管理者専用メニュー --}}
                                 <li class="header__nav-item">
-                                    <a href="{{ route('attendance.index') }}" class="header__link">今月の出勤一覧</a>
+                                    <a href="{{ route('admin.attendance.index') }}" class="header__link">勤怠一覧</a>
+                                </li>
+                                <li class="header__nav-item">
+                                    <a href="{{ route('admin.staff.index') }}" class="header__link">スタッフ一覧</a>
                                 </li>
                                 <li class="header__nav-item">
                                     <a href="{{ route('correction_request.list') }}" class="header__link">申請一覧</a>
                                 </li>
-                            @elseif (request()->routeIs('attendance.detail') || request()->routeIs('attendance.show'))
-                                @include('partials.nav-detail')
                             @else
-                                {{-- 通常のナビ --}}
-                                <li class="header__nav-item">
-                                    <a href="{{ route('attendance.create') }}" class="header__link">勤怠</a>
-                                </li>
-                                <li class="header__nav-item">
-                                    <a href="{{ route('attendance.index') }}" class="header__link">勤怠一覧</a>
-                                </li>
-                                <li class="header__nav-item">
-                                    <a href="{{ route('attendance.edit', ['id' => $attendanceId ?? 0]) }}" class="header__link">申請</a>
-                                </li>
+                                {{-- 一般ユーザー用 --}}
+                                @if (session('afterClockOut'))
+                                    <li class="header__nav-item">
+                                        <a href="{{ route('attendance.index') }}" class="header__link">今月の出勤一覧</a>
+                                    </li>
+                                    <li class="header__nav-item">
+                                        <a href="{{ route('correction_request.list') }}" class="header__link">申請一覧</a>
+                                    </li>
+                                @elseif (request()->routeIs('attendance.index') || request()->routeIs('attendance.edit'))
+                                    @include('partials.nav-detail')
+                                @else
+                                    <li class="header__nav-item">
+                                        <a href="{{ route('attendance.create') }}" class="header__link">勤怠</a>
+                                    </li>
+                                    <li class="header__nav-item">
+                                        <a href="{{ route('attendance.index') }}" class="header__link">勤怠一覧</a>
+                                    </li>
+                                    <li class="header__nav-item">
+                                        <a href="{{ route('attendance.edit', ['id' => $attendanceId ?? 0]) }}" class="header__link">申請</a>
+                                    </li>
+                                @endif
                             @endif
-                        @endif
 
-
-                        <!-- 共通：ログアウト -->
-                        <li class="header__nav-item">
-                            <form action="{{ Auth::user()->role === 'admin' ? '/admin/logout' : '/logout' }}" method="POST">
-                                @csrf
-                                <button class="header-nav__button" type="submit">ログアウト</button>
-                            </form>
-                        </li>
-                    </ul>
+                            {{-- 共通：ログアウト --}}
+                            <li class="header__nav-item">
+                                <form action="{{ auth()->check() && auth()->user()->role === 'admin' ? '/admin/logout' : '/logout' }}" method="POST">
+                                    @csrf
+                                    <button class="header-nav__button" type="submit">ログアウト</button>
+                                </form>
+                            </li>
+                        </ul>
                     @endif
                 </nav>
             @endauth

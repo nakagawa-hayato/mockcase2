@@ -14,7 +14,6 @@ class StampCorrectionRequest extends Model
         'attendance_id',
         'clock_in_at',
         'clock_out_at',
-        'breaks',
         'reason',
         'status',
         'approved_at',
@@ -22,7 +21,9 @@ class StampCorrectionRequest extends Model
     ];
 
     protected $casts = [
-        'breaks' => 'array',
+        'clock_in_at' => 'datetime',
+        'clock_out_at' => 'datetime',
+        'approved_at' => 'datetime',
     ];
 
     public function user()
@@ -38,6 +39,11 @@ class StampCorrectionRequest extends Model
     public function approver()
     {
         return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function breakCorrections()
+    {
+        return $this->hasMany(BreakCorrection::class);
     }
 
     // ✅ break_minutes の代わりに動的計算

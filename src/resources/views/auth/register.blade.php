@@ -5,8 +5,8 @@
 @endsection
 
 @section('content')
-<div class="register-form">
-    <h2 class="auth-form__heading content__heading">会員登録</h2>
+<div class="auth-form">
+    <h2 class="auth-form__heading">会員登録</h2>
     <div class="auth-form__inner">
         <form class="auth-form__form" action="/register" method="post">
             @csrf

@@ -6,7 +6,7 @@
 
 @section('content')
 <div class="auth-form">
-    <h2 class="auth-form__heading content__heading">管理者ログイン</h2>
+    <h2 class="auth-form__heading">管理者ログイン</h2>
     <div class="auth-form__inner">
         <form class="auth-form__form" action="{{ route('admin.login') }}" method="post">
             @csrf

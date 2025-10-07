@@ -1,0 +1,40 @@
+.list-tabs {
+    width: 100%;
+    display: flex;
+    gap: 80px;
+    padding: 20px 40px 0px;
+    border-bottom: 1px solid #000000;
+}
+
+.list__tab {
+    text-decoration: none;
+    color: #000000;
+    opacity: 0.5;
+    padding: 10px;
+    font-size: 16px;transition: opacity 0.2s;
+}
+
+.list__tab:hover {
+    opacity: 0.8;
+}
+
+
+.list-tabs .active-tab {
+    opacity: 1;
+    font-weight: 700;
+}
+
+.list-table__label,
+.list-table__data {
+    text-align: left;
+}
+
+.date {
+    letter-spacing: 0em;
+}
+
+.correction-list__table-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+}

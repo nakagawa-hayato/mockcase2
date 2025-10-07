@@ -34,17 +34,23 @@ Route::middleware(['auth','verified'])->group(function () {
     Route::post('/attendance/break-out', [AttendanceController::class, 'breakOut'])->name('attendance.breakOut');
     Route::post('/attendance/clock-out', [AttendanceController::class, 'clockOut'])->name('attendance.clockOut');
 
+    //月次勤怠一覧
     Route::get('/attendance/list', [AttendanceController::class, 'index'])->name('attendance.index');
 
     // 勤怠詳細
     Route::get('/attendance/detail/{id}', [AttendanceController::class, 'edit'])->name('attendance.edit');
-    Route::post('/attendance/stamp_correction_request/{attendanceId}', [AttendanceController::class, 'storeCorrectionRequest'])
-        ->name('attendance.correction.store');
-    Route::get('/attendance/show/{id}', [AttendanceController::class, 'show'])->name('attendance.show');
+    Route::post('/attendance/stamp_correction_request/{attendanceId}', [AttendanceController::class, 'store'])
+        ->name('attendance.correction_request.store');
 
     // 修正申請一覧（一般ユーザー／管理者共通）
     Route::get('/stamp_correction_request/list', [CorrectionRequestController::class, 'index'])
         ->name('correction_request.list');
+    // 修正申請詳細
+    Route::get('/stamp_correction_request/{attendance_correction_request}', [CorrectionRequestController::class, 'show'])
+        ->name('correction_request.show');
+    // 修正申請承認
+    Route::put('/stamp_correction_request/approve/{attendance_correction_request}', [CorrectionRequestController::class, 'approve'])
+        ->name('correction_request.approve');
 
 });
 
@@ -70,8 +76,6 @@ Route::prefix('admin')->group(function () {
         Route::get('/attendance/staff/{id}', [AdminStaffController::class, 'show'])->name('admin.staff.attendance.show');
         // CSVエクスポート
         Route::get('/staff/{id}/export', [AdminStaffController::class, 'exportCsv'])->name('admin.staff.export');
-        Route::put('/stamp_correction_request/list/{id}', [CorrectionRequestController::class, 'approve'])
-            ->name('correction_request.approve');
     });
 });
 
@@ -86,6 +90,12 @@ Route::get('/email/verify', function () {
 // ユーザーがメール内リンクをクリックしたとき
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill(); // 認証完了
+
+    $user = $request->user();
+    if ($user && $user->role === 'admin') {
+        return redirect('/admin/attendance/list');
+    }
+
     return redirect('/attendance'); // 認証後の遷移先
 })->middleware(['auth', 'signed'])->name('verification.verify');
 

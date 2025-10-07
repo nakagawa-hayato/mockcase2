@@ -1,11 +1,12 @@
 @extends('layouts.app')
 
 @section('css')
-<link rel="stylesheet" href="{{ asset('css/attendance.css') }}">
+<link rel="stylesheet" href="{{ asset('css/create.css') }}">
 @endsection
 
 @section('content')
 <div class="attendance-container">
+
     <!-- ステータス表示 -->
     <div class="status-box">
         <p>
@@ -21,14 +22,18 @@
 
     <!-- 日付・時間 -->
     <div class="datetime-box">
-        <p>{{ \Carbon\CarbonImmutable::now()->isoFormat('YYYY年MM月DD日(ddd)') }}</p>
-        <p>{{ now()->format('H:i') }}</p>
+        <div class="date-box">
+            <p>{{ \Carbon\CarbonImmutable::now()->isoFormat('YYYY年MM月DD日(ddd)') }}</p>
+        </div>
+        <div class="time-box">
+            <p>{{ now()->format('H:i') }}</p>
+        </div>
     </div>
 
     <!-- メッセージ -->
     @if(($attendance?->status ?? 'off') === 'finished')
         <div class="message-box">
-            <p class="text-green-600 font-bold">お疲れ様でした！</p>
+            <p class="text-green-600 font-bold">お疲れ様でした。</p>
         </div>
     @endif
 
@@ -45,15 +50,17 @@
             </form>
 
         @elseif($status === 'working')
-            <form method="POST" action="{{ route('attendance.clockOut') }}">
-                @csrf
-                <button type="submit" class="btn btn-danger">退勤</button>
-            </form>
+            <div class="button-box2">
+                <form method="POST" action="{{ route('attendance.clockOut') }}">
+                    @csrf
+                    <button type="submit" class="btn btn-danger">退勤</button>
+                </form>
 
-            <form method="POST" action="{{ route('attendance.breakIn') }}">
-                @csrf
-                <button type="submit" class="btn btn-warning">休憩入</button>
-            </form>
+                <form method="POST" action="{{ route('attendance.breakIn') }}">
+                    @csrf
+                    <button type="submit" class="btn btn-warning">休憩入</button>
+                </form>
+            </div>
 
         @elseif($status === 'on_break')
             <form method="POST" action="{{ route('attendance.breakOut') }}">

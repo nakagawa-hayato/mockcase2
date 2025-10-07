@@ -1,51 +1,68 @@
 @extends('layouts.app')
 
 @section('css')
-<link rel="stylesheet" href="{{ asset('css/attendance-list.css') }}">
+<link rel="stylesheet" href="{{ asset('css/list.css') }}">
 @endsection
 
 @section('content')
-<div class="attendance-list">
-    <h1 class="page-title">{{ $user->name }}さんの勤怠（{{ $displayLabel }}）</h1>
+<div class="form month-attendance-list">
+    <h1 class="content__heading month-attendance-list__heading">{{ str_replace('　', '', $user->name) }}さんの勤怠</h1>
 
     {{-- 月ナビ --}}
-    <div class="month-nav mb-3">
-        <a href="{{ route('admin.staff.attendance.show', ['id'=>$user->id,'ym'=>$prevYm]) }}">←先月</a>
-        <span class="mx-2">{{ $displayLabel }}</span>
-        <a href="{{ route('admin.staff.attendance.show', ['id'=>$user->id,'ym'=>$nextYm]) }}">翌月→</a>
+    <div class="content-nav">
+        <a class="content-nav__link" href="{{ route('attendance.index', ['ym' => $prevYm]) }}">
+            <img src="{{ asset('img/arrow.png') }}" alt="タイトル画像" class="image-arrow__left" />
+            先月
+        </a>
+        <div class="content-nav__date-label">
+            <img src="{{ asset('img/calendar.png') }}" alt="タイトル画像" class="image-calendar" />
+            <span class="content-nav__label">{{ $displayLabel }}</span>
+        </div>
+        <a class="content-nav__link" href="{{ route('attendance.index', ['ym' => $nextYm]) }}">
+            翌月
+            <img src="{{ asset('img/arrow.png') }}" alt="タイトル画像" class="image-arrow__right" />
+        </a>
     </div>
 
     {{-- テーブル --}}
-    <table class="attendance-table">
-        <thead>
-            <tr>
-                <th>日付</th>
-                <th>出勤</th>
-                <th>退勤</th>
-                <th>休憩</th>
-                <th>合計</th>
-                <th>詳細</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($rows as $row)
-            <tr>
-                <td>{{ $row['attendance']?->date_label ?? $row['date']->format('m/d') . '（' . ['日','月','火','水','木','金','土'][$row['date']->dayOfWeek] . '）' }}</td>
-                <td>{{ $row['attendance']?->clock_in_hm }}</td>
-                <td>{{ $row['attendance']?->clock_out_hm }}</td>
-                <td>{{ $row['attendance']?->break_hm }}</td>
-                <td>{{ $row['attendance']?->work_hm }}</td>
-                <td>
-                    <a href="{{ route('admin.attendance.edit', $row['attendance']?->id ?? 0) }}" class="btn-small">詳細</a>
+    <table class="list-table">
+        <tr class="list-table__row">
+            <th class="list-table__label first">日付</th>
+            <th class="list-table__label">出勤</th>
+            <th class="list-table__label">退勤</th>
+            <th class="list-table__label">休憩</th>
+            <th class="list-table__label">合計</th>
+            <th class="list-table__label">詳細</th>
+        </tr>
+        @foreach ($rows as $row)
+            <tr class="list-table__row">
+                {{-- 日付 --}}
+                <td class="list-table__data first">{{ $row['attendance']?->date_label ?? ($row['carbon']->format('m/d') . '（' . ['日','月','火','水','木','金','土'][$row['carbon']->dayOfWeek] . '）') }}</td>
+
+                {{-- 出勤 --}}
+                <td class="list-table__data">{{ $row['attendance']?->clock_in_hm }}</td>
+
+                {{-- 退勤 --}}
+                <td class="list-table__data">{{ $row['attendance']?->clock_out_hm }}</td>
+
+                {{-- 休憩 --}}
+                <td class="list-table__data">{{ $row['attendance']?->break_hm }}</td>
+
+                {{-- 勤務時間 --}}
+                <td class="list-table__data">{{ $row['attendance']?->work_hm }}</td>
+
+
+                {{-- 詳細（常に表示） --}}
+                <td class="list-table__data">
+                    <a href="{{ route('attendance.edit', ['id' => $row['attendance']?->id ?? 0]) }}" class="list-table__detail-btn">詳細</a>
                 </td>
             </tr>
-            @endforeach
-        </tbody>
+        @endforeach
     </table>
 
     {{-- CSV出力 --}}
-    <div class="mt-3">
-        <a href="{{ route('admin.staff.export', ['id' => $user->id]) }}" class="btn btn-success">CSV出力</a>
+    <div class="attendance-list__csv">
+        <a href="{{ route('admin.staff.export', ['id' => $user->id]) }}" class="btn attendance-list__csv-btn">CSV出力</a>
     </div>
 </div>
 @endsection
