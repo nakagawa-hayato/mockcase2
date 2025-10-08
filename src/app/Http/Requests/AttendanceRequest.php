@@ -17,8 +17,8 @@ class AttendanceRequest extends FormRequest
         public function rules()
     {
         return [
-            'clock_in_at' => 'required',
-            'clock_out_at' => 'required',
+            'clock_in_at' => 'nullable',
+            'clock_out_at' => 'nullable',
             'breaks' => 'nullable',
             'breaks.*.start_time' => 'nullable',
             'breaks.*.end_time' => 'nullable',
@@ -29,8 +29,6 @@ class AttendanceRequest extends FormRequest
     public function messages()
     {
         return [
-            'clock_in_at.required' => '出勤時間を記入してください',
-            'clock_out_at.required' => '退勤時間を記入してください',
             'reason.required' => '備考を記入してください',
         ];
     }
