@@ -34,7 +34,5 @@
 }
 
 .correction-list__table-btn {
-    display: block;
-    width: 100%;
-    text-align: left;
+    padding-left: 0px;
 }

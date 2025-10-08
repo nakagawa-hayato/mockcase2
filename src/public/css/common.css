@@ -96,27 +96,6 @@ input::placeholder {
     border-left: 8px solid #000000;
 }
 
-@media screen and (max-width: 1200px) {
-    .form-container,
-    .login-form__form,
-    .register-form__form,
-    .sell-form__form,
-    .edit-form__form {
-        width: 60vw;
-    }
-}
-
-@media screen and (max-width: 768px) {
-    .form-container,
-    .login-form__form,
-    .register-form__form,
-    .sell-form__form,
-    .edit-form__form {
-        width: 90vw;
-        padding: 48px 24px;
-    }
-}
-
 .btn {
     display: block;
     padding: 12px 0;
@@ -138,4 +117,191 @@ input::placeholder {
 .form__error {
     color: #FF333F;
     margin-top: 8px;
+}
+
+/* タブレット (1024px以下) */
+@media screen and (max-width: 1024px) {
+
+    .auth-form__form,
+    .form {
+        width: 80%;
+    }
+
+    .detail-form__date,
+    .detail-form__inputs {
+        width: 70%;
+    }
+
+    .list-tabs {
+        gap: 40px;
+        padding: 16px 20px 0;
+    }
+
+    .button-box2 {
+        gap: 48px;
+    }
+
+    .content {
+        padding: 40px 0;
+    }
+
+    .header__link {
+        font-size: 20px;
+    }
+}
+
+/* スマホ (768px以下) */
+@media screen and (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        height: auto;
+        padding: 8px 0;
+    }
+
+    .header__heading {
+        margin-bottom: 8px;
+    }
+
+    .header__nav-list {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .header__link {
+        font-size: 18px;
+        padding: 4px 8px;
+    }
+
+    .content {
+        padding: 24px 0;
+    }
+
+    .auth-form__form,
+    .form {
+        width: 90%;
+    }
+
+    .auth-form__label {
+        font-size: 18px;
+    }
+
+    .auth-form__input {
+        height: 40px;
+    }
+
+    .auth-form__btn {
+        font-size: 20px;
+    }
+
+    .content__heading {
+        font-size: 24px;
+        padding-left: 12px;
+        border-left-width: 6px;
+    }
+
+    .list-tabs {
+        flex-direction: column;
+        gap: 12px;
+        padding: 10px;
+        border: none;
+    }
+
+    .list__tab {
+        font-size: 14px;
+        text-align: center;
+    }
+
+    .list-table {
+        font-size: 14px;
+    }
+
+    .list-table__label:first-of-type,
+    .list-table__data:first-of-type {
+        padding-left: 16px;
+    }
+
+    .list-table__label:last-of-type,
+    .list-table__data:last-of-type {
+        padding-right: 16px;
+    }
+
+    .button-box2 {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .button-box .btn {
+        width: 180px;
+        height: 60px;
+        font-size: 24px;
+    }
+
+    .detail-form__group {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 16px;
+    }
+
+    .detail-form__label {
+        font-size: 14px;
+    }
+
+    .detail-form__textarea {
+        width: 100%;
+    }
+
+    .correction-detail-form__row {
+        grid-template-columns: 1fr;
+        padding: 16px;
+        gap: 8px;
+    }
+
+    .correction-detail-form__approve-btn,
+    .correction-detail-form__approved-label {
+        width: 100%;
+        margin: 0;
+    }
+}
+
+/* 小型スマホ (480px以下) */
+@media screen and (max-width: 480px) {
+    .header__link {
+        font-size: 16px;
+    }
+
+    .auth-form__heading {
+        font-size: 22px;
+    }
+
+    .auth-form__btn {
+        font-size: 18px;
+    }
+
+    .date-box {
+        font-size: 28px;
+    }
+
+    .time-box {
+        font-size: 48px;
+    }
+
+    .message-box {
+        font-size: 18px;
+    }
+
+    .btn {
+        font-size: 18px;
+    }
+
+    .list-table {
+        font-size: 12px;
+    }
+
+    .content__heading {
+        font-size: 20px;
+    }
+
+    .correction-detail-form__notice {
+        font-size: 14px;
+    }
 }
